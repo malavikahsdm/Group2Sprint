@@ -81,6 +81,14 @@ void makeCall(int sockfd) {
     recv(sockfd, buffer, BUFFER_SIZE, 0);
     printf("%s\n", buffer);
 }
+void displayCallLog(sockfd){
+  printf("call log\n");
+  return;
+}
+void unRegister(sockfd){
+	printf("unregister\n");
+	return;
+}
 
 int main() {
     int sockfd;
@@ -103,7 +111,7 @@ int main() {
 
     int choice;
     while (1) {
-        printf("\n1. Register\n2. Login\n3. Make Call\n4. Exit\n");
+        printf("\n1. Register\n2. Login\n3. Exit\n");
         printf("Choose an option: ");
         scanf("%d", &choice);
 
@@ -111,69 +119,92 @@ int main() {
             registerUser(sockfd);
             // After registration, ask for login or logout
             char action[10];
-            printf("Do you want to LOGIN or LOGOUT? ");
+            printf("Do you want to LOGIN or EXIT  or UNREGISTER? ");
             scanf("%s", action);
 
             if (strcmp(action, "LOGIN") == 0) {
                 loginUser(sockfd);
                 int subChoice;
                 while (1) {
-                    printf("\n3. Activate Call Forwarding\n4. Deactivate Call Forwarding\n5. Logout\n");
+                    printf("\n1. Activate Call Forwarding\n2. Deactivate Call Forwarding\n3. Make a call\n4. Display call logs \n5. Logout\n6. Unregister\n");
                     printf("Choose an option: ");
                     scanf("%d", &subChoice);
 
-                    switch (subChoice) {
-                        case 3:
+                      
+                        if(subChoice==1){
                             activateCallForwarding(sockfd);
-                            break;
-                        case 4:
+                            break;}
+                        else if(subChoice=2){
                             deactivateCallForwarding(sockfd);
-                            break;
-                        case 5:
-                            printf("Logging out...\n");
-                            break;
-                        default:
+                            break;}
+						else if(subChoice==3){
+							makeCall(sockfd);
+							break;}
+						else if(subChoice==4){
+							displayCallLog(sockfd);
+							break;}
+						else if(subChoice==5){
+							printf("Logging out..\n");
+							break;
+						}
+						else if(subChoice==6){
+							unRegister(sockfd);
+							break;
+							}
+                        else{
                             printf("Invalid choice. Please try again.\n");
                     }
-
-                    if (subChoice == 5) {
-                        break; // Exit the loop to go back to the main menu
-                    }
-                }
-            } else {
+                   
+                   }
+            } else if(strcmp(action,"UNREGISTER")==0){
+				unRegister(sockfd);
+				
+			}
+			
+			else  {
                 printf("Exiting...\n");
                 break;
             }
         } else if (choice == 2) {
             loginUser(sockfd);
             int subChoice;
-            while (1) {
-                printf("\n3. Activate Call Forwarding\n4. Deactivate Call Forwarding\n5. Logout\n");
-                printf("Choose an option: ");
-                scanf("%d", &subChoice);
+            
+                while (1) {
+                    printf("\n1. Activate Call Forwarding\n2. Deactivate Call Forwarding\n3. Make a call\n4. Display call logs \n5. Logout\n6. Unregister\n");
+                    printf("Choose an option: ");
+                    scanf("%d", &subChoice);
 
-                switch (subChoice) {
-                    case 3:
-                        activateCallForwarding(sockfd);
-                        break;
-                    case 4:
-                        deactivateCallForwarding(sockfd);
-                        break;
-                    case 5:
-                        printf("Logging out...\n");
-                        break;
-                    default:
-                        printf("Invalid choice. Please try again.\n");
+                   
+                        if(subChoice==1){
+                            activateCallForwarding(sockfd);
+                            break;}
+                        else if(subChoice==2){
+                            deactivateCallForwarding(sockfd);
+                            break;}
+				     	else if(subChoice==3){
+							makeCall(sockfd);
+							break;}
+						else if(subChoice==4){
+							displayCallLog(sockfd);
+							break;}
+						else if(subChoice==5){
+							printf("Logging out..");
+							break;
+						}
+						else if(subChoice==6){
+							unRegister(sockfd);
+							break;}
+                        else{
+                            printf("Invalid choice. Please try again.\n");
+                    }
+				
                 }
-
-                if (subChoice == 5) {
-                    break; // Exit the loop to go back to the main menu
-                }
-            }
+             
+			
+           
+ 
         } else if (choice == 3) {
-            makeCall(sockfd);
-        } else if (choice == 4) {
-            close(sockfd);
+			close(sockfd);
             exit(EXIT_SUCCESS);
         } else {
             printf("Invalid choice. Please try again.\n");
