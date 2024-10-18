@@ -13,12 +13,12 @@ void handleError(const char *message) {
 }
 
 void registerUser(int sockfd) {
-    char username[50], password[100], phone_no[10];
+    char username[50], password[100], phone_no[11];
     printf("Enter username: ");
     scanf("%s", username);
     printf("Enter password: ");
     scanf("%s", password);
-    printf("Enter phone no.: ");
+    printf("Enter phone_no.: ");
     scanf("%s", phone_no);
 
     char buffer[BUFFER_SIZE];
@@ -29,7 +29,7 @@ void registerUser(int sockfd) {
 }
 
 void loginUser(int sockfd) {
-    char username[50], phone_no[10], password[100];
+    char username[50], phone_no[11], password[100];
     printf("Enter username: ");
     scanf("%s", username);
     printf("Enter phone_no: ");
@@ -45,7 +45,7 @@ void loginUser(int sockfd) {
 }
 
 void activateCallForwarding(int sockfd) {
-    char username[50], forwardingType[20], phone_no[10], destination[20];
+    char username[50], forwardingType[20], phone_no[11], destination[20];
     printf("Enter your username: ");
     scanf("%s", username);
     printf("Enter call forwarding type (e.g., 'Unconditional', 'busy', 'Unanswered'): ");
@@ -63,7 +63,7 @@ void activateCallForwarding(int sockfd) {
 }
 
 void deactivateCallForwarding(int sockfd) {
-    char username[50], phone_no[10];
+    char username[50], phone_no[11];
     printf("Enter your username: ");
     scanf("%s", username);
     printf("Enter your phone_no: ");
@@ -76,7 +76,7 @@ void deactivateCallForwarding(int sockfd) {
 }
 
 void makeCall(int sockfd) {
-    char YourPhoneNo[50], callee[20], phone_no[10];
+    char YourPhoneNo[50], callee[20], phone_no[11];
     printf("Enter YourPhoneNo: ");
     scanf("%s", YourPhoneNo);
     printf("Enter callee username: ");
@@ -127,7 +127,7 @@ int main() {
             registerUser(sockfd);
             // After registration, ask for login or logout
             char action[10];
-            printf("Do you want to LOGIN or EXIT  or UNREGISTER? ");
+            printf("Do you want to: LOGIN\n EXIT\n UNREGISTER? ");
             scanf("%s", action);
 
             if (strcmp(action, "LOGIN") == 0) {
