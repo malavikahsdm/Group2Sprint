@@ -73,17 +73,13 @@ void loadForwardingsFromFile() {
 void saveUsersToFile() {
     FILE *file = fopen("users.txt", "w");
     for (int i = 0; i < userCount; i++) {
-        fprintf(file, "%s,%s,%s,%s,%d\n",
+        fprintf(file, "%s,%s,%s,%s,%d,%d\n",
                 users[i].user_id,
                 users[i].username,
                 users[i].password,
                 users[i].phone_no,
-                users[i].is_registered
-				users[i].is_forwarding_active,
-				
-				
-				
-				);
+                users[i].is_registered,
+				users[i].is_forwarding_active);
     }
     fclose(file);
 }
@@ -129,18 +125,18 @@ void registerUser(const char *username, const char *password, char *phone_no, in
     users[userCount].is_registered = 1;
 	userCount++;
    // initializing forwarding information
-  /*  strcpy(userForwardings[forwardingCount].username, username);
+    strcpy(userForwardings[forwardingCount].username, username);
     userForwardings[forwardingCount].is_forwarding_active = 0;
     strcpy(userForwardings[forwardingCount].forwarding_type, "");
     strcpy(userForwardings[forwardingCount].phone_no,phone_no);
     strcpy(userForwardings[forwardingCount].destination_number, "");
     userForwardings[forwardingCount].is_busy = 0;
     forwardingCount++;
-*/
+
     saveUsersToFile();
    	send(client_socket, "User registered successfully. \n", BUFFER_SIZE, 0);
 	
-  //.  saveForwardingsToFile();
+    saveForwardingsToFile();
     pthread_mutex_unlock(&user_mutex);
 }
 
@@ -150,7 +146,7 @@ void activateCallForwarding(const char *username, const char *type, const char *
     for (int i = 0; i < forwardingCount; i++) {
         if (strcmp(userForwardings[i].username, username) == 0) {
             userForwardings[i].is_forwarding_active = 1;
-		if(strcmp(type,"busy")||strcmp(type,"Unanswered")||strcmp(type,"Unconditional")){
+		if(strcmp(type,"busy")==0||strcmp(type,"Unanswered")==0||strcmp(type,"Unconditional")==0){
             strcpy(userForwardings[i].forwarding_type, type);}
 		else{
 		printf("enter a valid call forwarding type");
@@ -197,6 +193,20 @@ void authenticateUser(const char *username,const char *phone_no, const char *pas
     send(client_socket, "Authentication failed.\n", BUFFER_SIZE, 0);
     pthread_mutex_unlock(&user_mutex);
 }
+/*
+void changePassword(  char *phone_no, const char *new_password, int client_socket ){
+    pthread_mutex_lock(&user_mutex);
+    for (int i = 0; i < userCount; i++) {
+    if (strcmp(users[i].password, password) == 0 && strcmp(users[i].phone_no,phone_no)==0) {
+        strcpy(users[i].password, new_password);
+        saveUsersToFile();
+        send(client_socket, "Password changed successfully.\n", BUFFER_SIZE, 0);
+        return;
+       }
+
+   }
+ */
+
 
 void handleCall(const char *caller, const char *callee, const char *phone_no, int client_socket) {
     pthread_mutex_lock(&user_mutex);
@@ -211,7 +221,7 @@ void handleCall(const char *caller, const char *callee, const char *phone_no, in
             //userForwardings[i].is_busy = 0;  // Set user as busy for the call
             logCall(caller);  // Log the call
 
-            if (strcmp(userForwardings[i].forwarding_type,"busy") && userForwardings[i].is_busy==1) {
+            if (strcmp(userForwardings[i].forwarding_type,"busy")==0 && userForwardings[i].is_busy==1 &&  userForwardings[i].is_forwarding_active == 1) {
                 char response[BUFFER_SIZE];
                 sprintf(response, "Call from %s is forwarded to %s.\n", caller, userForwardings[i].destination_number);
                 send(client_socket, response, BUFFER_SIZE, 0);
@@ -219,7 +229,7 @@ void handleCall(const char *caller, const char *callee, const char *phone_no, in
                 pthread_mutex_unlock(&user_mutex);
                 return;
             }
-          else if(strcmp(userForwardings[i].forwarding_type,"Unanswered")){
+          else if(strcmp(userForwardings[i].forwarding_type,"Unanswered")==0 &&  userForwardings[i].is_forwarding_active == 1){
                 char response[BUFFER_SIZE];
  		    sleep(10);
                 sprintf(response, "Call from %s is forwarded to %s.\n", caller, userForwardings[i].destination_number);
@@ -227,7 +237,7 @@ void handleCall(const char *caller, const char *callee, const char *phone_no, in
                 pthread_mutex_unlock(&user_mutex);
                 return;        
 }
-         else if(strcmp(userForwardings[i].forwarding_type,"Unconditional")){
+         else if(strcmp(userForwardings[i].forwarding_type,"Unconditional")==0 &&  userForwardings[i].is_forwarding_active == 1){
                 char response[BUFFER_SIZE];
                 sprintf(response, "Call from %s is forwarded to %s.\n", caller, userForwardings[i].destination_number);
                 send(client_socket, response, BUFFER_SIZE, 0);

@@ -119,7 +119,7 @@ int main() {
     }
 
     while (1) {
-        printf("\n1. Register\n2. Login\n3. Exit\n");
+        printf("\n1. Register\n2. Login\n3. Make a call\n4. Exit\n");
         printf("Choose an option: ");
         scanf("%d", &choice);
 
@@ -211,7 +211,9 @@ int main() {
 			
            
  
-        } else if (choice == 3) {
+        }else if(choice == 3){
+			makeCall(sockfd);
+		}else if (choice == 4) {
 			close(sockfd);
             exit(EXIT_SUCCESS);
         } else {
