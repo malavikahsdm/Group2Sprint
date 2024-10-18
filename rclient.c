@@ -6,85 +6,94 @@
 
 #define PORT 8080
 #define BUFFER_SIZE 256
-
+int callLogCount=0;
 void handleError(const char *message) {
     perror(message);
     exit(EXIT_FAILURE);
 }
 
 void registerUser(int sockfd) {
-    char username[50], password[100];
+    char username[50], password[100], phone_no[10];
     printf("Enter username: ");
     scanf("%s", username);
     printf("Enter password: ");
     scanf("%s", password);
+    printf("Enter phone no.: ");
+    scanf("%s", phone_no);
 
     char buffer[BUFFER_SIZE];
-    sprintf(buffer, "REGISTER %s %s", username, password);
+    sprintf(buffer, "REGISTER %s %s %s", username, password, phone_no);
     send(sockfd, buffer, strlen(buffer), 0);
     recv(sockfd, buffer, BUFFER_SIZE, 0);
     printf("%s\n", buffer);
 }
 
 void loginUser(int sockfd) {
-    char username[50], password[100];
+    char username[50], phone_no[10], password[100];
     printf("Enter username: ");
     scanf("%s", username);
+    printf("Enter phone_no: ");
+    scanf("%s", phone_no);
     printf("Enter password: ");
     scanf("%s", password);
 
     char buffer[BUFFER_SIZE];
-    sprintf(buffer, "LOGIN %s %s", username, password);
+    sprintf(buffer, "LOGIN %s %s %s", username, phone_no, password);
     send(sockfd, buffer, strlen(buffer), 0);
     recv(sockfd, buffer, BUFFER_SIZE, 0);
     printf("%s\n", buffer);
 }
 
 void activateCallForwarding(int sockfd) {
-    char username[50], forwardingType[20], destination[20];
+    char username[50], forwardingType[20], phone_no[10], destination[20];
     printf("Enter your username: ");
     scanf("%s", username);
     printf("Enter call forwarding type (e.g., 'Unconditional', 'busy', 'Unanswered'): ");
     scanf("%s", forwardingType);
+    printf("Enter your phone_no: ");
+    scanf("%s",phone_no);
     printf("Enter destination number: ");
     scanf("%s", destination);
 
     char buffer[BUFFER_SIZE];
-    sprintf(buffer, "ACTIVATE %s %s %s", username, forwardingType, destination);
+    sprintf(buffer, "ACTIVATE %s %s %s %s", username, forwardingType, phone_no, destination);
     send(sockfd, buffer, strlen(buffer), 0);
     recv(sockfd, buffer, BUFFER_SIZE, 0);
     printf("%s\n", buffer);
 }
 
 void deactivateCallForwarding(int sockfd) {
-    char username[50];
+    char username[50], phone_no[10];
     printf("Enter your username: ");
     scanf("%s", username);
-
+    printf("Enter your phone_no: ");
+    scanf("%s", phone_no);
     char buffer[BUFFER_SIZE];
-    sprintf(buffer, "DEACTIVATE %s", username);
+    sprintf(buffer, "DEACTIVATE %s %s", username, phone_no);
     send(sockfd, buffer, strlen(buffer), 0);
     recv(sockfd, buffer, BUFFER_SIZE, 0);
     printf("%s\n", buffer);
 }
 
 void makeCall(int sockfd) {
-    char caller[50], callee[50];
-    printf("Enter your username: ");
-    scanf("%s", caller);
+    char YourPhoneNo[50], callee[20], phone_no[10];
+    printf("Enter YourPhoneNo: ");
+    scanf("%s", YourPhoneNo);
     printf("Enter callee username: ");
     scanf("%s", callee);
-
+    printf("Enter callee phone_no: ");
+    scanf("%s",phone_no);
     char buffer[BUFFER_SIZE];
-    sprintf(buffer, "CALL %s %s", caller, callee);
+    sprintf(buffer, "CALL %s %s %s", YourPhoneNo, callee, phone_no);
     send(sockfd, buffer, strlen(buffer), 0);
     recv(sockfd, buffer, BUFFER_SIZE, 0);
     printf("%s\n", buffer);
 }
 void displayCallLog(sockfd){
-  printf("call log\n");
-  return;
+   printf("call log");
+   return;
 }
+
 void unRegister(sockfd){
 	printf("unregister\n");
 	return;
@@ -214,4 +223,3 @@ int main() {
     close(sockfd);
     return 0;
 }
-
