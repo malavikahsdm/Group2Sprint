@@ -100,9 +100,9 @@ void unRegister(sockfd){
 }
 
 int main() {
-    int sockfd;
+    int sockfd = -1;
     struct sockaddr_in server_addr;
-
+    int choice=0;
     // Create socket
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         handleError("Socket creation failed");
@@ -118,7 +118,6 @@ int main() {
         handleError("Connection to server failed");
     }
 
-    int choice;
     while (1) {
         printf("\n1. Register\n2. Login\n3. Exit\n");
         printf("Choose an option: ");

@@ -45,7 +45,7 @@ void loadUsersFromFile() {
                   users[userCount].username,
                   users[userCount].password,
                   users[userCount].phone_no,
-                  &users[userCount].is_registered) ==4 ) {
+                  &users[userCount].is_registered) == 5 ) {
         userCount++;
     }
     fclose(file);
@@ -61,7 +61,7 @@ void loadForwardingsFromFile() {
                   userForwardings[forwardingCount].forwarding_type,
                   userForwardings[forwardingCount].phone_no,
                   userForwardings[forwardingCount].destination_number,
-                  &userForwardings[forwardingCount].is_busy) == 5) {
+                  &userForwardings[forwardingCount].is_busy) == 6) {
         forwardingCount++;
     }
     fclose(file);
