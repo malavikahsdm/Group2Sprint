@@ -89,15 +89,58 @@ void makeCall(int sockfd) {
     recv(sockfd, buffer, BUFFER_SIZE, 0);
     printf("%s\n", buffer);
 }
-void displayCallLog(sockfd){
-   printf("call log");
-   return;
+
+
+void displayCallLog(int sockfd){
+
+       char caller[11];
+        printf("Enter Your Phone No: ");
+        scanf("%s", caller);
+        char buffer[BUFFER_SIZE];
+        sprintf(buffer, "CALLLOG %s ", caller);
+        send(sockfd, buffer, strlen(buffer), 0);
+        recv(sockfd, buffer, BUFFER_SIZE, 0);
+		printf("%s\n", buffer);
+        
 }
 
-void unRegister(sockfd){
-	printf("unregister\n");
-	return;
+
+void unregisterUser(int sockfd){
+   char phone_no[11], password[100];
+ 
+    printf("\nEnter phone_no: +91 ");
+    scanf("%s", phone_no);
+    printf("\nEnter password: ");
+    scanf("%s", password);
+    char buffer[BUFFER_SIZE];
+    sprintf(buffer, "UNREGISTER %s %s", phone_no, password);
+    send(sockfd, buffer, strlen(buffer), 0);
+    recv(sockfd, buffer, BUFFER_SIZE, 0);
+    printf("%s\n", buffer);
+    //printf("\nUnregistered successfully\n");
 }
+
+
+
+void changePassword(int sockfd){
+	char phone_no[11], password[100], new_password[100];
+	printf("Enter phone no: ");
+	scanf("%s", phone_no);
+	printf("Enter old password: ");
+	scanf("%s",password);
+	printf("Enter new password: ");
+	scanf("%s", new_password);
+    char buffer[BUFFER_SIZE];
+    sprintf(buffer, "CHANGE_PASSWORD %s %s %s", phone_no, password, new_password);
+    send(sockfd, buffer, strlen(buffer), 0);
+    recv(sockfd, buffer, BUFFER_SIZE, 0);
+    printf("%s\n", buffer);
+
+}
+
+
+
+
 
 int main() {
     int sockfd = -1;
@@ -134,7 +177,7 @@ int main() {
                 loginUser(sockfd);
                 int subChoice;
                 while (1) {
-                    printf("\n1. Activate Call Forwarding\n2. Deactivate Call Forwarding\n3. Make a call\n4. Display call logs \n5. Logout\n6. Unregister\n");
+                    printf("\n1. Activate Call Forwarding\n2. Deactivate Call Forwarding\n3. Make a call\n4. Display call logs \n5. change password\n6. Logout\n7. Unregistered");
                     printf("Choose an option: ");
                     scanf("%d", &subChoice);
 
@@ -151,12 +194,17 @@ int main() {
 						else if(subChoice==4){
 							displayCallLog(sockfd);
 							break;}
-						else if(subChoice==5){
+                        else if(subChoice==5){
+						    changePassword(sockfd);
+							break;
+						}
+
+						else if(subChoice==6){
 							printf("Logging out..\n");
 							break;
 						}
-						else if(subChoice==6){
-							unRegister(sockfd);
+						else if(subChoice==7){
+							unregisterUser(sockfd);
 							break;
 							}
                         else{
@@ -165,7 +213,7 @@ int main() {
                    
                    }
             } else if(strcmp(action,"UNREGISTER")==0){
-				unRegister(sockfd);
+				unregisterUser(sockfd);
 				
 			}
 			
@@ -200,7 +248,7 @@ int main() {
 							break;
 						}
 						else if(subChoice==6){
-							unRegister(sockfd);
+							unregisterUser(sockfd);
 							break;}
                         else{
                             printf("Invalid choice. Please try again.\n");

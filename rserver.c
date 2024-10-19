@@ -10,7 +10,7 @@
 #define PORT 8080
 #define BUFFER_SIZE 256
 #define MAX_USERS 100
-
+char new_password[100];
 typedef struct {
     char user_id[20];
     char username[50];
@@ -85,7 +85,7 @@ void saveUsersToFile() {
 }
 
 void saveForwardingsToFile() {
-    FILE *file = fopen("forwardings.txt", "a");
+    FILE *file = fopen("forwardings.txt", "w");
     for (int i = 0; i < forwardingCount; i++) {
         fprintf(file, "%s,%d,%s,%s,%s,%d\n",
                 userForwardings[i].username,
@@ -193,8 +193,8 @@ void authenticateUser(const char *username,const char *phone_no, const char *pas
     send(client_socket, "Authentication failed.\n", BUFFER_SIZE, 0);
     pthread_mutex_unlock(&user_mutex);
 }
-/*
-void changePassword(  char *phone_no, const char *new_password, int client_socket ){
+
+void changePassword(  char *phone_no,const char *password, const char *new_password, int client_socket ){
     pthread_mutex_lock(&user_mutex);
     for (int i = 0; i < userCount; i++) {
     if (strcmp(users[i].password, password) == 0 && strcmp(users[i].phone_no,phone_no)==0) {
@@ -203,15 +203,15 @@ void changePassword(  char *phone_no, const char *new_password, int client_socke
         send(client_socket, "Password changed successfully.\n", BUFFER_SIZE, 0);
         return;
        }
-
+}
    }
- */
+
 
 
 void handleCall(const char *caller, const char *callee, const char *phone_no, int client_socket) {
     pthread_mutex_lock(&user_mutex);
     for (int i = 0; i < forwardingCount; i++) {
-        if (strcmp(userForwardings[i].username, callee) == 0 && strcmp(userForwardings[i].phone_no,phone_no)==0) {
+        if (strcmp(userForwardings[i].username, callee) == 0 && strcmp(userForwardings[i].phone_no,phone_no)==0 && userForwardings[i].is_forwarding_active == 1) {
         /*    if (userForwardings[i].is_busy) {
                 send(client_socket, "Callee and destination number are busy.\n", BUFFER_SIZE, 0);
                 pthread_mutex_unlock(&user_mutex);
@@ -267,17 +267,20 @@ void *clientHandler(void *socket_desc) {
  
         // Command parsing with more flexibility
         if (sscanf(buffer, "%19s", command) == 1) {
-            if (strcmp(command, "REGISTER") == 0 && sscanf(buffer, "%*s %49s %99s %9s", username, password, phone_no) == 3) {
+            if (strcmp(command, "REGISTER") == 0 && sscanf(buffer, "%*s %49s %99s %10s", username, password, phone_no) == 3) {
                 registerUser(username, password, phone_no, client_socket);
-            } else if (strcmp(command, "LOGIN") == 0 && sscanf(buffer, "%*s %49s %9s %99s", username, phone_no, password) == 3) {
+            } else if (strcmp(command, "LOGIN") == 0 && sscanf(buffer, "%*s %49s %10s %99s", username, phone_no, password) == 3) {
                 authenticateUser(username, phone_no, password, client_socket);
-            } else if (strcmp(command, "ACTIVATE") == 0 && sscanf(buffer, "%*s %49s %19s %9s %19s", username, forwardingType, phone_no, destination) == 4) {
+            } else if (strcmp(command, "ACTIVATE") == 0 && sscanf(buffer, "%*s %49s %19s %10s %19s", username, forwardingType, phone_no, destination) == 4) {
                 activateCallForwarding(username, forwardingType, phone_no, destination, client_socket);
-            } else if (strcmp(command, "DEACTIVATE") == 0 && sscanf(buffer, "%*s %49s %9s", username, phone_no) == 2) {
+            } else if (strcmp(command, "DEACTIVATE") == 0 && sscanf(buffer, "%*s %49s %10s", username, phone_no) == 2) {
                 deactivateCallForwarding(username, phone_no, client_socket);
-            } else if (strcmp(command, "CALL") == 0 && sscanf(buffer, "%*s %49s %49s %9s", username, callee, phone_no) == 3) {
+            } else if (strcmp(command, "CALL") == 0 && sscanf(buffer, "%*s %49s %49s %10s", username, callee, phone_no) == 3) {
                 handleCall(username, callee, phone_no, client_socket);
-            } else {
+			} else if (strcmp(command, "CHANGE_PASSWORD")==0 && sscanf(buffer, "%*s %10s %99s %99s",phone_no,password,new_password)==3){
+			    changePassword(phone_no,password,new_password,client_socket);
+			}
+			else {
                 send(client_socket, "Invalid command or parameters.\n", BUFFER_SIZE, 0);
             }
         }
