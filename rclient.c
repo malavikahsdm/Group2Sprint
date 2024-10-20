@@ -210,6 +210,7 @@ int main() {
                    }
             } else if(strcmp(action,"UNREGISTER")==0){
 				unregisterUser(sockfd);
+				break;
 				
 			}
 			
