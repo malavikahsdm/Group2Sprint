@@ -26,7 +26,7 @@ typedef struct {
     int is_forwarding_active;
     char forwarding_type[20];
     char phone_no[11];
-    char destination_number[20];
+    char destination_number[11];
     int is_busy;  // Indicates if the user is busy
 } UserForwarding;
 
@@ -49,7 +49,9 @@ pthread_mutex_t user_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void loadUsersFromFile() {
     FILE *file = fopen("users.txt", "r");
-    if (!file) return;
+    if (!file){
+	 	perror("Error opening users.txt");
+		return;}
 
     while (userCount<MAX_USERS && fscanf(file, "%[^,],%[^,],%[^,],%[^,],%d\n",
                   users[userCount].user_id,
@@ -59,12 +61,17 @@ void loadUsersFromFile() {
                   &users[userCount].is_registered) == 5 ) {
         userCount++;
     }
-    fclose(file);
+    if(fclose(file)!=0){
+		perror("Error closing user.txt");
+	}
 }
 
 void loadForwardingsFromFile() {
     FILE *file = fopen("forwardings.txt", "r");
-    if (!file) return;
+    if (!file){ 
+		perror("Error opening forwardings.txt");
+	 	return;
+	}
 
     while (forwardingCount<MAX_USERS && fscanf(file, "%[^,],%d,%[^,],%s,%s,%d\n",
                   userForwardings[forwardingCount].username,
@@ -75,24 +82,36 @@ void loadForwardingsFromFile() {
                   &userForwardings[forwardingCount].is_busy) == 6) {
         forwardingCount++;
     }
-    fclose(file);
+    if(fclose(file)!=0){
+		perror("Error closing forwardings.txt");
+	}
 }
 
 void loadcall(){
 	FILE *file = fopen("call_log.txt","r");
-	if(!file) return;
+	if(!file) {
+		perror("Error opening forwardings.txt");
+		return;
+	}
 	while(callCount<MAX_USERS && fscanf(file, "%[^,],%[^,]\n",
                      callLogs[callCount].caller,
                      callLogs[callCount].timestamp)==2){
               callCount++;
 }
-     fclose(file);
+    if( fclose(file)! = 0){
+		perror("Error closing forwardings.txt");
+	
+	}
 }
 
 
 
 void saveUsersToFile() {
     FILE *file = fopen("users.txt", "w");
+	if(!file){
+		perror("Error opening users.txt for writing");
+		return;
+	}
     for (int i = 0; i < userCount; i++) {
         fprintf(file, "%s,%s,%s,%s,%d\n",
                 users[i].user_id,
@@ -102,11 +121,18 @@ void saveUsersToFile() {
                 users[i].is_registered);
 				
     }
-    fclose(file);
+    if(fclose(file)!=0){
+		perror("Error closing users.txt");
+	
+	}
 }
 
 void saveForwardingsToFile() {
     FILE *file = fopen("forwardings.txt", "w");
+	if (!file) {
+        perror("Error opening forwardings.txt for writing");
+        return; 
+    }
     for (int i = 0; i < forwardingCount; i++) {
         fprintf(file, "%s,%d,%s,%s,%s,%d\n",
                 userForwardings[i].username,
@@ -116,19 +142,26 @@ void saveForwardingsToFile() {
                 userForwardings[i].destination_number,
                 userForwardings[i].is_busy);
     }
-    fclose(file);
+   if( fclose(file) != 0){
+		perror("Error closing forwardings.txt");
 }
 
 void logCall(const char *caller) {
     FILE *file = fopen("call_log.txt", "a");
-    if (!file) return;
+    if (!file) {
+		perror("Error opening call_log.txt for appending");
+		return;
+	}
 
     time_t now = time(NULL);
     char *timestamp = ctime(&now);
     timestamp[strcspn(timestamp, "\n")] = 0; // Remove newline character from timestamp
 
     fprintf(file, "Caller: %s, Timestamp: %s\n", caller, timestamp);
-    fclose(file);
+   if( fclose(file) != 0){
+   		perror("error closing call_log.txt");
+   
+   }
 }
 
 void registerUser(const char *username, const char *password, char *phone_no, int client_socket) {
@@ -320,7 +353,7 @@ void *clientHandler(void *socket_desc) {
  
     while ((valread = read(client_socket, buffer, BUFFER_SIZE)) > 0) {
         buffer[valread] = '\0';
-        char command[20], username[50], password[100], forwardingType[20], destination[20], callee[50], phone_no[11];
+        char command[20], username[50], password[100], forwardingType[20], destination[11], callee[50], phone_no[11];
  
         // Command parsing with more flexibility
         if (sscanf(buffer, "%19s", command) == 1) {
@@ -328,7 +361,7 @@ void *clientHandler(void *socket_desc) {
                 registerUser(username, password, phone_no, client_socket);
             } else if (strcmp(command, "LOGIN") == 0 && sscanf(buffer, "%*s %49s %10s %99s", username, phone_no, password) == 3) {
                 authenticateUser(username, phone_no, password, client_socket);
-            } else if (strcmp(command, "ACTIVATE") == 0 && sscanf(buffer, "%*s %49s %19s %10s %19s", username, forwardingType, phone_no, destination) == 4) {
+            } else if (strcmp(command, "ACTIVATE") == 0 && sscanf(buffer, "%*s %49s %19s %10s %10s", username, forwardingType, phone_no, destination) == 4) {
                 activateCallForwarding(username, forwardingType, phone_no, destination, client_socket);
             } else if (strcmp(command, "DEACTIVATE") == 0 && sscanf(buffer, "%*s %49s %10s", username, phone_no) == 2) {
                 deactivateCallForwarding(username, phone_no, client_socket);
@@ -349,7 +382,9 @@ void *clientHandler(void *socket_desc) {
         }
     }
  
-    close(client_socket);
+   if( close(client_socket) != 0){
+   		perror("Error closing client socket");
+   }
     free(socket_desc);
     return NULL;
 }
@@ -359,18 +394,14 @@ int main() {
     socklen_t addr_len = sizeof(client_addr);
     pthread_t thread_id;
    
-  //  printf("Server listening on port %d\n", PORT);
-   // loadUsersFromFile();
-   // loadForwardingsFromFile();
-    
-   // printf("Server listening on port1 %d\n", PORT);
-    // Create socket
+  
+   //create socket
     if ((server_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("Socket creation failed");
         exit(EXIT_FAILURE);
     }
 
-   // printf("Server listening on port2 %d\n", PORT);
+   
     // Set up server address
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -383,7 +414,7 @@ int main() {
         exit(EXIT_FAILURE);
     }
     
-   // printf("Server listening on port3%d\n", PORT);
+  
     // Start listening for connections
     if (listen(server_socket, 3) < 0) {
         perror("Listen failed");
@@ -394,7 +425,8 @@ int main() {
     printf("Server listening on port %d\n", PORT);
     loadUsersFromFile();
 	loadForwardingsFromFile();
-//	printf("fggr");
+	loadcall();
+
     while (1) {
         // Accept a new connection
         client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &addr_len);
@@ -411,14 +443,21 @@ int main() {
         if (pthread_create(&thread_id, NULL, clientHandler, (void *)new_sock) < 0) {
             perror("Could not create thread");
             free(new_sock);
+			close(client_socket);
             continue;
         }
 
         // Detach the thread
-        pthread_detach(thread_id);
+       if( pthread_detach(thread_id)!=0){
+	   		perror("could not detach thread");
+			close(client_socket);
+	   		free(new_sock);
+	   }
     }
 
     // Cleanup
-    close(server_socket);
+   if( close(server_socket)!=0){
+   		perror("Error closing server socket");
+   }
     return 0;
 }

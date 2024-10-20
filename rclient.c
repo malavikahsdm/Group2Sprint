@@ -45,7 +45,7 @@ void loginUser(int sockfd) {
 }
 
 void activateCallForwarding(int sockfd) {
-    char username[50], forwardingType[20], phone_no[11], destination[20];
+    char username[50], forwardingType[20], phone_no[11], destination[11];
     printf("Enter your username: ");
     scanf("%s", username);
     printf("Enter call forwarding type (e.g., 'Unconditional', 'busy', 'Unanswered'): ");
@@ -226,7 +226,7 @@ int main() {
             int subChoice;
             
                 while (1) {
-                    printf("\n1. Activate Call Forwarding\n2. Deactivate Call Forwarding\n3. Make a call\n4. Display call logs \n5. Logout\n6. Unregister\n");
+                    printf("\n1. Activate Call Forwarding\n2. Deactivate Call Forwarding\n3. Make a call\n4. Display call logs \n5. change password\n6. Logout\n7. Unregister\n");
                     printf("Choose an option: ");
                     scanf("%d", &subChoice);
 
@@ -243,6 +243,11 @@ int main() {
 						else if(subChoice==4){
 							displayCallLog(sockfd);
 							break;}
+
+						else if(subChoice==5){
+						    changePassword(sockfd);
+							break;
+						}
 						else if(subChoice==5){
 							printf("Logging out..");
 							break;
