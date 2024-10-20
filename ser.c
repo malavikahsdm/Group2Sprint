@@ -98,7 +98,7 @@ void loadcall(){
                      callLogs[callCount].timestamp)==2){
               callCount++;
 }
-    if( fclose(file)! = 0){
+    if( fclose(file)!= 0){
 		perror("Error closing forwardings.txt");
 	
 	}
@@ -145,7 +145,7 @@ void saveForwardingsToFile() {
    if( fclose(file) != 0){
 		perror("Error closing forwardings.txt");
 }
-
+}
 void logCall(const char *caller) {
     FILE *file = fopen("call_log.txt", "a");
     if (!file) {
