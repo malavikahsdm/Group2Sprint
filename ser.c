@@ -10,8 +10,6 @@
 #define PORT 8080
 #define BUFFER_SIZE 256
 #define MAX_USERS 100
-char new_password[100];
-char caller[11];
 typedef struct {
     char user_id[20];
     char username[50];
@@ -222,8 +220,6 @@ void deactivateCallForwarding(const char *username, const char *phone_no, int cl
     for (int i = 0; i < forwardingCount; i++) {
         if (strcmp(userForwardings[i].username, username) == 0 && strcmp(userForwardings[i].phone_no,phone_no)==0) {
             userForwardings[i].is_forwarding_active = 0;
-            strcpy(userForwardings[i].forwarding_type, "");
-            strcpy(userForwardings[i].destination_number, "");
             saveForwardingsToFile();
             send(client_socket, "Call forwarding deactivated.\n", BUFFER_SIZE, 0);
             pthread_mutex_unlock(&user_mutex);
@@ -236,7 +232,6 @@ void deactivateCallForwarding(const char *username, const char *phone_no, int cl
 
 void authenticateUser(const char *username,const char *phone_no, const char *password, int client_socket) {
     pthread_mutex_lock(&user_mutex);
-	loadUsersFromFile();
     for (int i = 0; i < userCount; i++) {
         if (strcmp(users[i].username, username) == 0 && strcmp(users[i].password, password) == 0 && strcmp(users[i].phone_no,phone_no)==0) {
             send(client_socket, "Authentication successful.\n", BUFFER_SIZE, 0);
@@ -301,13 +296,7 @@ void handleCall(const char *caller, const char *callee, const char *phone_no, in
     pthread_mutex_lock(&user_mutex);
     for (int i = 0; i < forwardingCount; i++) {
         if (strcmp(userForwardings[i].username, callee) == 0 && strcmp(userForwardings[i].phone_no,phone_no)==0 && userForwardings[i].is_forwarding_active == 1) {
-        /*    if (userForwardings[i].is_busy) {
-                send(client_socket, "Callee and destination number are busy.\n", BUFFER_SIZE, 0);
-                pthread_mutex_unlock(&user_mutex);
-                return;
-            }
-			*/
-            //userForwardings[i].is_busy = 0;  // Set user as busy for the call
+       
             logCall(caller);  // Log the call
 
             if (strcmp(userForwardings[i].forwarding_type,"busy")==0 && userForwardings[i].is_busy==1 &&  userForwardings[i].is_forwarding_active == 1) {
@@ -341,6 +330,11 @@ void handleCall(const char *caller, const char *callee, const char *phone_no, in
                 return;
             }
         }
+		else if(strcmp(userForwardings[i].username, callee) == 0 && strcmp(userForwardings[i].phone_no,phone_no)==0){
+			send(client_socket, "Call connected normally.\n", BUFFER_SIZE, 0);
+                    pthread_mutex_unlock(&user_mutex);
+                    return;
+		} 
     }
     send(client_socket, "Callee not found.\n", BUFFER_SIZE, 0);
     pthread_mutex_unlock(&user_mutex);
@@ -353,7 +347,7 @@ void *clientHandler(void *socket_desc) {
  
     while ((valread = read(client_socket, buffer, BUFFER_SIZE)) > 0) {
         buffer[valread] = '\0';
-        char command[20], username[50], password[100], forwardingType[20], destination[11], callee[50], phone_no[11];
+        char command[20], username[50], password[100], forwardingType[20], destination[11], callee[50], phone_no[11], new_password[100], caller[11];
  
         // Command parsing with more flexibility
         if (sscanf(buffer, "%19s", command) == 1) {

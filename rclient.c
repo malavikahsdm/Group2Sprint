@@ -138,10 +138,6 @@ void changePassword(int sockfd){
 
 }
 
-
-
-
-
 int main() {
     int sockfd = -1;
     struct sockaddr_in server_addr;
@@ -170,7 +166,7 @@ int main() {
             registerUser(sockfd);
             // After registration, ask for login or logout
             char action[10];
-            printf("Do you want to: LOGIN\n EXIT\n UNREGISTER? ");
+            printf("Do you want to:\n1. LOGIN\n2. EXIT\n3. UNREGISTER");
             scanf("%s", action);
 
             if (strcmp(action, "LOGIN") == 0) {
