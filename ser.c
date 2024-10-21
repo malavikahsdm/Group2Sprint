@@ -123,7 +123,7 @@ void saveUsersToFile() {
 		perror("Error closing users.txt");
 	
 	}
-
+}
 
 void saveForwardingsToFile() {
     FILE *file = fopen("forwardings.txt", "a");
