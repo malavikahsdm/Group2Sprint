@@ -19,7 +19,7 @@ void registerUser(int sockfd) {
     printf("Enter password: ");
     scanf("%s", password);
 	while(1){
-    printf("Enter phone_no.: ");
+    printf("Enter phone_no.: +91");
     scanf("%s", phone_no);
     if(strlen(phone_no)!=10){
 		printf("Enter valid phone no.\n");
@@ -39,7 +39,7 @@ void loginUser(int sockfd) {
     char username[50], phone_no[11], password[100];
     printf("Enter username: ");
     scanf("%s", username);
-    printf("Enter phone_no: ");
+    printf("Enter phone_no: +91");
     scanf("%s", phone_no);
     printf("Enter password: ");
     scanf("%s", password);
@@ -85,10 +85,10 @@ void activateCallForwarding(int sockfd) {
 	}
 
 
-    printf("Enter your phone_no: ");
+    printf("Enter your phone_no: +91");
     scanf("%s",phone_no);
 	 while(1){
-        printf("Enter destination number: ");
+        printf("Enter destination number: +91");
  		scanf("%s", destination);
       if(strlen(destination)!=10){
          printf("Enter valid destination number\n");
@@ -109,7 +109,7 @@ void deactivateCallForwarding(int sockfd) {
     char username[50], phone_no[11];
     printf("Enter your username: ");
     scanf("%s", username);
-    printf("Enter your phone_no: ");
+    printf("Enter your phone_no: +91");
     scanf("%s", phone_no);
     char buffer[BUFFER_SIZE];
     sprintf(buffer, "DEACTIVATE %s %s", username, phone_no);
@@ -121,7 +121,7 @@ void deactivateCallForwarding(int sockfd) {
 void makeCall(int sockfd) {
     char YourPhoneNo[50], callee[20], phone_no[11];
 	while(1){
-     printf("Enter YourPhoneNo: ");
+     printf("Enter YourPhoneNo: +91");
      scanf("%s", YourPhoneNo);
 	 if(strlen(YourPhoneNo)!=10){
 	 	printf("Entered valid number\n");
@@ -132,7 +132,7 @@ void makeCall(int sockfd) {
 	}
     printf("Enter callee username: ");
     scanf("%s", callee);
-    printf("Enter callee phone_no: ");
+    printf("Enter callee phone_no: +91");
     scanf("%s",phone_no);
     char buffer[BUFFER_SIZE];
     sprintf(buffer, "CALL %s %s %s", YourPhoneNo, callee, phone_no);
@@ -145,7 +145,7 @@ void makeCall(int sockfd) {
 void displayCallLog(int sockfd){
 
        char caller[11];
-        printf("Enter Your Phone No: ");
+        printf("Enter Your Phone No: +91");
         scanf("%s", caller);
         char buffer[BUFFER_SIZE];
         sprintf(buffer, "CALLLOG %s ", caller);
@@ -159,7 +159,7 @@ void displayCallLog(int sockfd){
 void unregisterUser(int sockfd){
    char phone_no[11], password[100];
  
-    printf("\nEnter phone_no: +91 ");
+    printf("\nEnter phone_no: +91");
     scanf("%s", phone_no);
     printf("\nEnter password: ");
     scanf("%s", password);
@@ -175,7 +175,7 @@ void unregisterUser(int sockfd){
 
 void changePassword(int sockfd){
 	char phone_no[11], password[100], new_password[100];
-	printf("Enter phone no: ");
+	printf("Enter phone no: +91");
 	scanf("%s", phone_no);
 	printf("Enter old password: ");
 	scanf("%s",password);
