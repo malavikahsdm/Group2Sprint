@@ -50,7 +50,7 @@ void activateCallForwarding(int sockfd) {
     printf("Enter your username: ");
     scanf("%s", username);
     printf(" call forwarding type\n1. Unconditional\n2. Busy\n3. Unanswered\n ");
-	printf("Enter your choice: ")
+	printf("Enter your choice: ");
     scanf("%d", &choice);
     
 	if(choice==1){

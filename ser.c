@@ -263,7 +263,7 @@ void displayCallLog(char *caller, int client_socket){
 	char buffer[BUFFER_SIZE];
 	for(int i=0;i<callCount;i++){
 	if(strcmp(callLogs[i].caller,caller)==0){
-		strcpy(buffer,callLogs[i].timestamp);
+		sprintf(buffer, BUFFER_SIZE, "%s\n", callLogs[i].timestamp);
 	}
 	send(client_socket,buffer,BUFFER_SIZE,0);
 	pthread_mutex_unlock(&user_mutex);
@@ -309,7 +309,7 @@ void handleCall(const char *caller, const char *callee, const char *phone_no, in
             }
           else if(strcmp(userForwardings[i].forwarding_type,"Unanswered")==0 &&  userForwardings[i].is_forwarding_active == 1){
                 char response[BUFFER_SIZE];
- 		    sleep(10);
+ 		        sleep(10);
                 sprintf(response, "Call from %s is forwarded to %s.\n", caller, userForwardings[i].destination_number);
                 send(client_socket, response, BUFFER_SIZE, 0);
                 pthread_mutex_unlock(&user_mutex);
