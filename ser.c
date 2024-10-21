@@ -123,7 +123,7 @@ void saveUsersToFile() {
 		perror("Error closing users.txt");
 	
 	}
-}
+
 
 void saveForwardingsToFile() {
     FILE *file = fopen("forwardings.txt", "a");
@@ -210,7 +210,8 @@ void activateCallForwarding(const char *username, const char *type, const char *
 		if(strcmp(type,"Busy")==0||strcmp(type,"Unanswered")==0||strcmp(type,"Unconditional")==0){
             strcpy(userForwardings[i].forwarding_type, type);}
 		else{
-		printf("enter a valid call forwarding type");
+		   send(client_socket,"enter a valid call forwarding type\n",BUFFER_SIZE,0);
+		   pthread_mutex_unlock(&user_mutex);
             }
             strcpy(userForwardings[i].phone_no,phone_no);
             strcpy(userForwardings[i].destination_number, destination);
@@ -304,6 +305,15 @@ void unregisterUser(const char *phone_no, const char *password, int client_socke
 void handleCall(const char *caller, const char *callee, const char *phone_no, int client_socket) {
     pthread_mutex_lock(&user_mutex);
     for (int i = 0; i < forwardingCount; i++) {
+
+	if(strcmp(caller,userForwardings[i].destination_number)==0){
+			send(client_socket,"caller and destination number are same\n",BUFFER_SIZE,0);
+			pthread_mutex_unlock(&user_mutex);
+	}
+    if(strcmp(phone_no,caller)==0){
+		send(client_socket,"caller and callee number are same",BUFFER_SIZE,0);
+		pthread_mutex_unlock(&user_mutex);
+	}
         if (strcmp(userForwardings[i].username, callee) == 0 && strcmp(userForwardings[i].phone_no,phone_no)==0 && userForwardings[i].is_forwarding_active == 1) {
        
             logCall(caller);  // Log the call
