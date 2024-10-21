@@ -198,7 +198,7 @@ void activateCallForwarding(const char *username, const char *type, const char *
     for (int i = 0; i < forwardingCount; i++) {
         if (strcmp(userForwardings[i].username, username) == 0) {
             userForwardings[i].is_forwarding_active = 1;
-		if(strcmp(type,"busy")==0||strcmp(type,"Unanswered")==0||strcmp(type,"Unconditional")==0){
+		if(strcmp(type,"Busy")==0||strcmp(type,"Unanswered")==0||strcmp(type,"Unconditional")==0){
             strcpy(userForwardings[i].forwarding_type, type);}
 		else{
 		printf("enter a valid call forwarding type");
@@ -299,7 +299,7 @@ void handleCall(const char *caller, const char *callee, const char *phone_no, in
        
             logCall(caller);  // Log the call
 
-            if (strcmp(userForwardings[i].forwarding_type,"busy")==0 && userForwardings[i].is_busy==1 &&  userForwardings[i].is_forwarding_active == 1) {
+            if (strcmp(userForwardings[i].forwarding_type,"Busy")==0 && userForwardings[i].is_busy==1 &&  userForwardings[i].is_forwarding_active == 1) {
                 char response[BUFFER_SIZE];
                 sprintf(response, "Call from %s is forwarded to %s.\n", caller, userForwardings[i].destination_number);
                 send(client_socket, response, BUFFER_SIZE, 0);

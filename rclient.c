@@ -45,11 +45,39 @@ void loginUser(int sockfd) {
 }
 
 void activateCallForwarding(int sockfd) {
-    char username[50], forwardingType[20], phone_no[11], destination[11];
+    char username[50],forwardingType[20],  phone_no[11], destination[11];
+	int choice=0;
     printf("Enter your username: ");
     scanf("%s", username);
-    printf("Enter call forwarding type (e.g., 'Unconditional', 'busy', 'Unanswered'): ");
-    scanf("%s", forwardingType);
+    printf(" call forwarding type\n1. Unconditional\n2. Busy\n3. Unanswered\n ");
+	printf("Enter your choice: ")
+    scanf("%d", &choice);
+    
+	if(choice==1){
+	strcpy(forwardingType, "Unconditional");
+	forwardingType[strlen(forwardingType)]='\0';
+
+	}
+
+	else if(choice==2){
+	strcpy(forwardingType, "Busy");
+	forwardingType[strlen(forwardingType)]='\0';
+	
+	}
+
+
+	else if(choice==3){
+	
+	strcpy(forwardingType, "Unanswered");
+	forwardingType[strlen(forwardingType)]='\0';
+	}
+
+
+	else{
+	printf("Invalid choice. \n");
+	}
+
+
     printf("Enter your phone_no: ");
     scanf("%s",phone_no);
     printf("Enter destination number: ");
@@ -164,16 +192,16 @@ int main() {
 
         if (choice == 1) {
             registerUser(sockfd);
-            // After registration, ask for login or logout
-            char action[10];
-            printf("Do you want to:\n1. LOGIN\n2. EXIT\n3. UNREGISTER");
-            scanf("%s", action);
+            // After registration, ask for login or exit or unregister.
+            int action=0;
+            printf("Do you want to:\n1. Login\n2. Unregister\n3. Exit\n");
+            scanf("%d", &action);
 
-            if (strcmp(action, "LOGIN") == 0) {
+            if (action==1) {
                 loginUser(sockfd);
                 int subChoice;
                 while (1) {
-                    printf("\n1. Activate Call Forwarding\n2. Deactivate Call Forwarding\n3. Make a call\n4. Display call logs \n5. change password\n6. Logout\n7. Unregistered");
+                    printf("\n1. Activate Call Forwarding\n2. Deactivate Call Forwarding\n3. Make a call\n4. Display call logs \n5. change password\n6. Logout\n7. Unregistered\n");
                     printf("Choose an option: ");
                     scanf("%d", &subChoice);
 
@@ -208,16 +236,20 @@ int main() {
                     }
                    
                    }
-            } else if(strcmp(action,"UNREGISTER")==0){
+            } else if(action==2){
 				unregisterUser(sockfd);
 				break;
 				
 			}
 			
-			else  {
+			else if(action==3){
                 printf("Exiting...\n");
                 break;
             }
+			else{
+			  printf("Invalid choice entered\n");
+			  break;
+			}
         } else if (choice == 2) {
             loginUser(sockfd);
             int subChoice;
