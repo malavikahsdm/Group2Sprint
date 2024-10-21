@@ -126,7 +126,7 @@ void saveUsersToFile() {
 }
 
 void saveForwardingsToFile() {
-    FILE *file = fopen("forwardings.txt", "w");
+    FILE *file = fopen("forwardings.txt", "a");
 	if (!file) {
         perror("Error opening forwardings.txt for writing");
         return; 
@@ -169,13 +169,22 @@ void registerUser(const char *username, const char *password, char *phone_no, in
         pthread_mutex_unlock(&user_mutex);
         return;
     }
-
+    for(int i=0;i<userCount;i++){
+	if(strcmp(users[i].username,username)==0 || strcmp(users[i].phone_no,phone_no)==0){
+		send(client_socket,"User already registered\n",BUFFER_SIZE,0);
+		pthread_mutex_unlock(&user_mutex);
+		return;
+}	}
+	
     sprintf(users[userCount].user_id, "U%d", userCount + 1);
     strcpy(users[userCount].username, username);
     strcpy(users[userCount].password, password);
     strcpy(users[userCount].phone_no, phone_no);
     users[userCount].is_registered = 1;
+
 	userCount++;
+	
+
    // initializing forwarding information
     strcpy(userForwardings[forwardingCount].username, username);
     userForwardings[forwardingCount].is_forwarding_active = 0;
@@ -196,7 +205,7 @@ void activateCallForwarding(const char *username, const char *type, const char *
     pthread_mutex_lock(&user_mutex);
 
     for (int i = 0; i < forwardingCount; i++) {
-        if (strcmp(userForwardings[i].username, username) == 0) {
+        if (strcmp(userForwardings[i].username, username) == 0 && strcmp(userForwardings[i].phone_no,phone_no)==0) {
             userForwardings[i].is_forwarding_active = 1;
 		if(strcmp(type,"Busy")==0||strcmp(type,"Unanswered")==0||strcmp(type,"Unconditional")==0){
             strcpy(userForwardings[i].forwarding_type, type);}
@@ -263,7 +272,7 @@ void displayCallLog(char *caller, int client_socket){
 	char buffer[BUFFER_SIZE];
 	for(int i=0;i<callCount;i++){
 	if(strcmp(callLogs[i].caller,caller)==0){
-		sprintf(buffer, BUFFER_SIZE, "%s\n", callLogs[i].timestamp);
+		printf(buffer, BUFFER_SIZE, "%s\n", callLogs[i].timestamp);
 	}
 	send(client_socket,buffer,BUFFER_SIZE,0);
 	pthread_mutex_unlock(&user_mutex);

@@ -18,9 +18,16 @@ void registerUser(int sockfd) {
     scanf("%s", username);
     printf("Enter password: ");
     scanf("%s", password);
+	while(1){
     printf("Enter phone_no.: ");
     scanf("%s", phone_no);
-
+    if(strlen(phone_no)!=10){
+		printf("Enter valid phone no.\n");
+	}
+	else{
+		break;
+	}
+	}
     char buffer[BUFFER_SIZE];
     sprintf(buffer, "REGISTER %s %s %s", username, password, phone_no);
     send(sockfd, buffer, strlen(buffer), 0);
@@ -80,9 +87,17 @@ void activateCallForwarding(int sockfd) {
 
     printf("Enter your phone_no: ");
     scanf("%s",phone_no);
-    printf("Enter destination number: ");
-    scanf("%s", destination);
-
+	 while(1){
+        printf("Enter destination number: ");
+ 		scanf("%s", destination);
+      if(strlen(destination)!=10){
+         printf("Enter valid destination number\n");
+      }
+      else{
+         break;
+      }
+     }
+    
     char buffer[BUFFER_SIZE];
     sprintf(buffer, "ACTIVATE %s %s %s %s", username, forwardingType, phone_no, destination);
     send(sockfd, buffer, strlen(buffer), 0);
@@ -105,8 +120,16 @@ void deactivateCallForwarding(int sockfd) {
 
 void makeCall(int sockfd) {
     char YourPhoneNo[50], callee[20], phone_no[11];
-    printf("Enter YourPhoneNo: ");
-    scanf("%s", YourPhoneNo);
+	while(1){
+     printf("Enter YourPhoneNo: ");
+     scanf("%s", YourPhoneNo);
+	 if(strlen(YourPhoneNo)!=10){
+	 	printf("Entered valid number\n");
+	 }
+	 else{
+	 	break;
+	 }
+	}
     printf("Enter callee username: ");
     scanf("%s", callee);
     printf("Enter callee phone_no: ");
