@@ -181,7 +181,7 @@ int main() {
                         if(subChoice==1){
                             activateCallForwarding(sockfd);
                             break;}
-                        else if(subChoice=2){
+                        else if(subChoice==2){
                             deactivateCallForwarding(sockfd);
                             break;}
 						else if(subChoice==3){
